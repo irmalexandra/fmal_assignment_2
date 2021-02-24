@@ -1,18 +1,12 @@
-﻿module Assignment_2.Program
-
-// Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
-
-open System
-
-// Define a function to construct a message to print
-// T-501-FMAL, Spring 2021, Assignment 2
+﻿// T-501-FMAL, Spring 2021, Assignment 2
 
 (*
 STUDENT NAMES HERE: ...
-Loki Alexander Hopkins
-Ríkharður Friðgeirsson
+
 
 *)
+
+module Assignment2
 
 
 (* Various type and function definitions, do not edit *)
@@ -155,16 +149,14 @@ let rec reval (inss : rcode) (stk : stack) (renv : renvir) =
     | _ -> failwith "reval: too few operands on stack"
 
 
+
+
+
 // Problem 1
 
-
-let rec lookup_var (x : string) (env : (string * 'a) list) : 'a =
-    match env with
-    | []          -> I 0
-    | (y, v)::env -> if x = y then v else lookup_var x env
 let rec ieval (e : iexpr) (env : envir) : value =
     match e with
-    | IVar x -> lookup_var x env                       // to modify
+    | IVar x -> lookup x env                       // to modify
     | INumI i -> I i
     | INumF f -> F f
     | IPlus (e1, e2) -> plus_value (ieval e1 env, ieval e2 env)
@@ -175,144 +167,48 @@ let rec ieval (e : iexpr) (env : envir) : value =
         then ieval et env
         else ieval ef env
 
-printfn "%A" (ieval (IVar "x") [])
-// val it : value = I 0
-printfn "%A" (ieval (IVar "x") ["x", I 5])
-// val it : value = I 5
-printfn "%A" (ieval (IPlus (IVar "x", ITimes (IVar "y", IVar "z"))) ["x", F 1.1; "z", I 10])
-// val it : value = F 1.1
-
-
 
 // Problem 2
 
 let rec eval (e : expr) (env : envir) : value =
     match e with
-    | Var x -> lookup_var x env
+    | Var x -> lookup x env
     | NumI i -> I i
     | NumF f -> F f
     | Plus (e1, e2) ->                             // to complete
         match eval e1 env, eval e2 env with
         | I i1, I i2 -> I (i1 + i2)
-        | F f1, F f2 -> F (f1 + f2)
         | _ -> failwith "wrong operand type"
     | Times (e1, e2) ->                            // to complete
         match eval e1 env, eval e2 env with
         | I i1, I i2 -> I (i1 * i2)
-        | F f1, F f2 -> F (f1 * f2)
         | _ -> failwith "wrong operand type"
     | Neg e ->                                     // to complete
         match eval e env with
         | I i -> I (- i)
-        | F f -> F (- f)
         | _ -> failwith "wrong operand type"
     | IntToFloat e ->
         match eval e env with
         | I i -> F (float i)
         | _ -> failwith "wrong operand type"
-    | IfPositive (e, et, ef) ->
-        if is_positive_value (eval e env)
-        then eval et env
-        else eval ef env
-    | Match (e, xi, ei, xf, ef) ->
-        match eval e env with
-        | I n -> eval ei [xi, I n]
-        | F n -> eval ef [xf, F n]
-  
-
+    | IfPositive (e, et, ef) -> failwith "to implement"
+    | Match (e, xi, ei, xf, ef) -> failwith "to implement"
         
-printfn "Expected F 3.3, got %A" (eval (Plus (Var "x", Var "y")) ["x", F 1.1; "y", F 2.2])
-printfn "Expected F 6.05, got %A" (eval (Times (Var "x", Plus (NumF 3.3, Var "y"))) ["x", F 1.1; "y", F 2.2])
-printfn "Expected F 11.6, got %A" (eval (Plus (IntToFloat (Plus (NumI 2, NumI 3)), NumF 6.6)) [])
-
-//printfn "Expected System.Exception: wrong operand type, got %A" (eval (Plus (NumI 1, NumF 2.0)) [])
-//
-//printfn "Expected System.Exception: wrong operand type, got %A" (eval (Times (NumF 1.0, NumI 2)) [])
-
-printfn "Expected F -5.6, got %A" (eval (Neg (Var "x")) ["x", F 5.6])
-
-printfn "Expected F 1.1, got %A" (eval (IfPositive (Var "x", NumF 1.1, NumF 2.2)) ["x", I 1])
-printfn "Expected F 2.2, got %A" (eval (IfPositive (Var "x", NumF 1.1, NumF 2.2)) ["x", I -1])
-
-printfn "Expected F 1.1, got %A" (eval (IfPositive (Var "x", NumF 1.1, NumF 2.2)) ["x", F 1.0])
-
-printfn "Expected F 2.2, got %A" (eval (IfPositive (Var "x", NumF 1.1, NumF 2.2)) ["x", F -1.0])
-
-printfn "Expected I 12, got %A" (eval (Match (Var "x", "zi", Plus (Var "zi", NumI 2), "zf", Plus (Var "zf", NumF 3.))) ["x", I 10])
-
-printfn "Expected F 13.0, got %A" (eval (Match (Var "x", "zi", Plus (Var "zi", NumI 2), "zf", Plus (Var "zf", NumF 3.))) ["x", F 10.])
 
 
 // Problem 3
 
-let to_float (v : value) : float =
-    match v with
-    | F v -> v
-    | I v -> float(v)
+let to_float (v : value) : float = failwith "to implement"
 
-printfn "Expected F 5.5, got %A" (to_float (F 5.5))
-printfn "Expected F 5.0, got %A" (to_float (I 5))
-printfn "Expected F -11.0, got %A" (to_float (I -11))
-printfn "Expected F -11.0, got %A" (to_float (F -11.0))
 
 // Problem 4
 
-let to_float_expr (e : expr) : expr =
-    Match(e, (fun e -> match e with | Var s -> s)e, IntToFloat(e), (fun e -> match e with | Var s -> s)e, e)
-    
+let to_float_expr (e : expr) : expr = failwith "to implement"
 
+let plus_expr (e1 : expr, e2 : expr) : expr = failwith "to implement"
 
-let plus_expr (e1 : expr, e2 : expr) : expr =
-      
-      let exp1 = Match(e1, (fun e -> match e with | Var s -> s)e1, IntToFloat(e1), (fun e -> match e with | Var s -> s)e2, e2)
-      let exp2 = Match(e1, (fun e -> match e with | Var s -> s)e1, e1, (fun e -> match e with | Var s -> s)e2, IntToFloat(e2))
-      let exp3 = Match(e2, (fun e -> match e with | Var s -> s)e2, IntToFloat(e2), (fun e -> match e with | Var s -> s)e1, e1)
-      let exp4 = Match(e2, (fun e -> match e with | Var s -> s)e2, e2, (fun e -> match e with | Var s -> s)e1, IntToFloat(e1))
-      let exp5 = Match(e1, (fun e -> match e with | Var s -> s)e1, e1, (fun e -> match e with | Var s -> s)e2, e2)
-      
-      let shit1 = prettyprint e1
-      let shit2 = prettyprint e2
-      let shit3 = prettyprint exp3
-      let shit4 = prettyprint exp4
-      let shit5 = prettyprint exp5
-      printfn "%s" shit1
-      printfn "%s" shit2
-      printfn "%s" shit3
-      printfn "%s" shit4
-      printfn "%s" shit5
-      Plus(exp1, exp2)
-        
-//    match Match(e1, (fun e1 -> match e1 with | Var s -> s)e1, IntToFloat(e1), (fun e1 -> match e1 with | Var s -> s)e1, e1) with
-//    | Match _ -> match Match(e2, (fun e2 -> match e2 with | Var s -> s)e2, IntToFloat(e2), (fun e2 -> match e2 with | Var s -> s)e2, e2) with
-//        | Match _ -> Plus(e1, e2)
-//        | NumF _ -> Plus(to_float_expr(e1), e2)
-//        | _ -> failwith "inner"
-//    | NumF _ -> Plus(to_float_expr(e1), to_float_expr(e2))
-//    | _ -> failwith "outer"
+let times_expr (e1 : expr, e2 : expr) : expr = failwith "to implement"
 
-let times_expr (e1 : expr, e2 : expr) : expr =
-    Times(to_float_expr(e1), to_float_expr(e2))
-
-printfn "Expected F 4.0, got %A" (eval (to_float_expr (Var "x")) ["x", I 4])
-
-printfn "Expected F 4.4, got %A" (eval (to_float_expr (Var "x")) ["x", F 4.4])
-
-
-printfn "Expected I 13, got %A" (eval (plus_expr (Var "x", Var "y")) ["x", I 6; "y", I 7])
-
-printfn "Expected F 13.1, got %A" (eval (plus_expr (Var "x", Var "y")) ["x", F 6.1; "y", I 7])
-
-printfn "Expected F 13.2, got %A" (eval (plus_expr (Var "x", Var "y")) ["x", I 6; "y", F 7.2])
-
-printfn "Expected F 13.3, got %A" (eval (plus_expr (Var "x", Var "y")) ["x", F 6.1; "y", F 7.2])
-
-printfn "Expected I 42, got %A" (eval (times_expr (Var "x", Var "y")) ["x", I 6; "y", I 7])
-printfn "Expected F 42.7, got %A" (eval (times_expr (Var "x", Var "y")) ["x", F 6.1; "y", I 7])
-
-printfn "Expected F 43.2, got %A" (eval (times_expr (Var "x", Var "y")) ["x", I 6; "y", F 7.2])
-// val it : value = F 43.2
-// > eval (times_expr (Var "x", Var "y")) ["x", F 6.1; "y", F 7.2];;
-// val it : value = F 43.92
 
 // Problem 5
 

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "EqZpUK6qHGAxbK4k97YPywbZvHxvlJOL+xmeVmBB/h8sBVMvX14LLLc0MLfmA8+NUm9aV/OOEEpP8F9BqkELKw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rikki\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
+    "C:\\Users\\rikki\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.10\\microsoft.netcore.app.host.win-x64.3.1.10.nupkg.sha512"
+  ],
+  "logs": []
+}
