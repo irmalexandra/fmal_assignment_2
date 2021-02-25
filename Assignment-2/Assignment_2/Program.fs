@@ -4,6 +4,8 @@
 
 open System
 open System.Linq.Expressions
+open System.Runtime.Serialization
+open System.Text.RegularExpressions
 
 // Define a function to construct a message to print
 // T-501-FMAL, Spring 2021, Assignment 2
@@ -298,22 +300,117 @@ printfn "Expected F 43.92, got %A" (eval (times_expr (Var "x", Var "y")) ["x", F
 
 // Problem 5
 
-let rec add_matches (e : iexpr) : expr = failwith "to implement"
+let rec add_matches (e : iexpr) : expr =
+    match e with
+    | IVar elem -> Var elem
+    | INumF elem -> NumF elem
+    | INumI elem -> NumI elem
+    | INeg elem -> Neg(add_matches(elem))
+    | IPlus (elem1, elem2) -> plus_expr(add_matches(elem1), add_matches(elem2))
+    | ITimes (elem1, elem2) -> times_expr(add_matches(elem1), add_matches(elem2))
+    | IIfPositive (elem1, elem2, elem3) -> IfPositive (add_matches(elem1), add_matches(elem2), add_matches(elem3))
+    
 
 printfn "----PROBLEM 5----"
+printfn "Expected I 5, got %A" (eval (add_matches (IVar "x")) ["x", I 5])
+printfn "Expected F 5.5, got %A" (eval (add_matches (IVar "x")) ["x", F 5.5])
+printfn "Expected F -16.5, got %A" (eval (add_matches (INeg (ITimes (INumI 3, INumF 5.5)))) [])
+printfn "Expected F 10.4, got %A" (eval (add_matches (IIfPositive (IVar "x", INumI 1, IPlus (IVar "y", INumF 4.4)))) ["x", I -2; "y", I 6])
+printfn "Expected I 20, got %A" (eval (add_matches (IIfPositive (INeg (IVar "x"), IPlus (IVar "y", INumI 5), ITimes (IVar "y", INumI 5)))) ["x", F 2.2; "y", I 4])
+
 
 // Problem 6
 
 let rec infer (e : expr) (tyenv : tyenvir) : typ =
-    failwith "to implement"
+    match e with
+    | Var x -> lookup x tyenv
+    | NumI x -> Int
+    | NumF x -> Float
+    | Plus(x, y) ->
+        match infer x tyenv, infer y tyenv with
+        | Int, Int -> Int
+        | Float, Float -> Float
+        | _ -> failwith "wrong operand type"
+    | Times(x, y) ->
+        match infer x tyenv, infer y tyenv with
+        | Int, Int -> Int
+        | Float, Float -> Float
+        | _ -> failwith "wrong operand type"
+    | Neg(x) ->
+        match infer x tyenv with
+        | Int -> Int
+        | Float -> Float
+    | IntToFloat(x) ->
+        match infer x tyenv with
+        | Int -> Float
+        | _ -> failwith "wrong operand type"
+    |IfPositive(x, y, z) ->
+        match infer x tyenv, infer y tyenv, infer z tyenv with
+        | Int, Int, Int -> Int
+        | Float, Float, Float -> Float
+        | Float, Int, Int -> Int
+        | Int, Float, Float -> Float
+        | _ -> failwith "wrong operand type"
+    |Match(e, xi, ei, xf, ef) ->
+        match infer e tyenv with
+        | Int -> infer ei (tyenv @ [xi, Int])
+        | Float -> infer ef (tyenv @ [xf, Float])
+
 
 printfn "----PROBLEM 6----"
+printfn "Expected Int, got %A" (infer (Plus (Var "x", Var "y")) ["x", Int; "y", Int])
+printfn "Expected Float, got %A" (infer (Plus (Var "x", Var "y")) ["x", Float; "y", Float])
+printfn "Expected Float, got %A" (infer (Times (Var "x", Var "y")) ["x", Float; "y", Float])
+//printfn "Expected System.Exception: wrong operand type, got %A" (infer (Plus (Var "x", Var "y")) ["x", Int; "y", Float])
+//printfn "Expected System.Exception: wrong operand type, got %A" (infer (Times (Var "x", Var "y")) ["x", Float; "y", Int])
+printfn "Expected Int, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Int; "y", Int; "z", Int])
+printfn "Expected Float, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Int; "y", Float; "z", Float])
+printfn "Expected Int, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Float; "y", Int; "z", Int])
+printfn "Expected Float, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Float; "y", Float; "z", Float])
+//printfn "Expected System.Exception: branches of different types, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Int; "y", Int; "z", Float])
+//printfn "Expected System.Exception: branches of different types, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Float; "y", Float; "z", Int])
+printfn "Expected Int, got %A" (infer (Match (Var "x", "xi", Var "xi", "xf", NumI 1)) ["x", Int])
+printfn "Expected Int, got %A" (infer (Match (Var "x", "xi", Var "xi", "xf", NumI 1)) ["x", Float])
+printfn "Expected Float, got %A" (infer (Match (Var "x", "xi", NumF 1.1, "xf", Var "xf")) ["x", Int])
+printfn "Expected Float, got %A" (infer (Match (Var "x", "xi", NumF 1.1, "xf", Var "xf")) ["x", Float])
+printfn "Expected Int, got %A" (infer (Match (Neg (Var "x"), "xi", Plus (NumI 4, Var "xi"), "xf", IfPositive(Var "xf", NumI 5, Times (NumI 4, NumI 6)))) ["x", Int])
+printfn "Expected Float, got %A" (infer (Plus (NumF 3.4, IntToFloat (NumI 4))) [])
+//printfn "Expected System.Exception: wrong operand type, got %A" (infer (Plus (NumF 3.4, IntToFloat (NumF 4.4))) [])
+//printfn "Expected System.Exception: wrong operand type, got %A" (infer (Plus (NumI 3, IntToFloat (NumI 4))) [])
+
 // Problem 7
 
-let add_casts (e : iexpr) (tyenv : tyenvir) : expr =
-    failwith "to implement"
+let rec add_casts (e : iexpr) (tyenv : tyenvir) : expr =
+    match e with
+    | IVar x -> Var x
+    | INumI x -> NumI x
+    | INumF x -> NumF x
+    | IPlus (exp1, exp2) ->
+        match infer(add_casts exp1 tyenv) tyenv, infer(add_casts exp2 tyenv) tyenv with
+        | Int, Float -> Plus(IntToFloat(add_casts(exp1) tyenv), add_casts(exp2) tyenv)
+        | Float, Int -> Plus(add_casts(exp1) tyenv, IntToFloat(add_casts(exp2) tyenv))
+        | _ -> Plus(add_casts(exp1) tyenv, add_casts(exp2) tyenv)
+    | ITimes (exp1, exp2) ->
+        match infer(add_casts exp1 tyenv) tyenv, infer(add_casts exp2 tyenv) tyenv with
+        | Int, Float -> Times(IntToFloat(add_casts(exp1) tyenv), add_casts(exp2) tyenv)
+        | Float, Int -> Times(add_casts(exp1) tyenv, IntToFloat(add_casts(exp2) tyenv))
+        | _ -> Times(add_casts(exp1) tyenv, add_casts(exp2) tyenv)
+    | INeg exp ->
+        match infer(add_casts exp tyenv) tyenv with
+        | Int -> Neg(add_casts(exp) tyenv)
+        | Float -> Neg(add_casts(exp) tyenv)
+    | IIfPositive (exp1, exp2, exp3) -> 
+        match infer(add_casts exp1 tyenv) tyenv, infer(add_casts exp2 tyenv) tyenv, infer(add_casts exp3 tyenv) tyenv with
+        | _ -> IfPositive((add_casts(exp1) tyenv, add_casts(exp2) tyenv, add_casts(exp3) tyenv))
+        
 
 printfn "----PROBLEM 7----"
+printfn "Expected I 5, got %A" (eval (add_casts (IVar "x") ["x", Int]) ["x", I 5])
+printfn "Expected F 5.5, got %A" (eval (add_casts (IVar "x") ["x", Float]) ["x", F 5.5])
+printfn "Expected F -16.5, got %A" (eval (add_casts (INeg (ITimes (INumI 3, INumF 5.5))) []) [])
+printfn "Expected F 10.4 got %A" (eval (add_casts (IIfPositive (IVar "x", INumI 1, IPlus (IVar "y", INumF 4.4))) ["x", Int; "y", Int]) ["x", I -2; "y", I 6])
+printfn "Expected I 20 got %A" (eval (add_casts (IIfPositive (INeg (IVar "x"), IPlus (IVar "y", INumI 5), ITimes (IVar "y", INumI 5))) ["x", Float; "y", Int]) ["x", F 2.2; "y", I 4])
+
 // Problem 8
 
 // ANSWER 8 HERE:
