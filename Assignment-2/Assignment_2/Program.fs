@@ -298,16 +298,51 @@ printfn "Expected F 43.92, got %A" (eval (times_expr (Var "x", Var "y")) ["x", F
 
 // Problem 5
 
-let rec add_matches (e : iexpr) : expr = failwith "to implement"
+let rec add_matches (e : iexpr) : expr =
+    match e with
+    | IVar elem -> Var elem
+    | INumF elem -> NumF elem
+    | INumI elem -> NumI elem
+    | INeg elem -> Neg(add_matches(elem))
+    | IPlus (elem1, elem2) -> plus_expr(add_matches(elem1), add_matches(elem2))
+    | ITimes (elem1, elem2) -> times_expr(add_matches(elem1), add_matches(elem2))
+    | IIfPositive (elem1, elem2, elem3) -> IfPositive (add_matches(elem1), add_matches(elem2), add_matches(elem3))
+    
 
 printfn "----PROBLEM 5----"
+printfn "Expected I 5, got %A" (eval (add_matches (IVar "x")) ["x", I 5])
+printfn "Expected F 5.5, got %A" (eval (add_matches (IVar "x")) ["x", F 5.5])
+printfn "Expected F -16.5, got %A" (eval (add_matches (INeg (ITimes (INumI 3, INumF 5.5)))) [])
+printfn "Expected F 10.4, got %A" (eval (add_matches (IIfPositive (IVar "x", INumI 1, IPlus (IVar "y", INumF 4.4)))) ["x", I -2; "y", I 6])
+printfn "Expected I 20, got %A" (eval (add_matches (IIfPositive (INeg (IVar "x"), IPlus (IVar "y", INumI 5), ITimes (IVar "y", INumI 5)))) ["x", F 2.2; "y", I 4])
+
 
 // Problem 6
 
 let rec infer (e : expr) (tyenv : tyenvir) : typ =
-    failwith "to implement"
+    
 
 printfn "----PROBLEM 6----"
+printfn "Expected Int, got %A" (infer (Plus (Var "x", Var "y")) ["x", Int; "y", Int])
+printfn "Expected Float, got %A" (infer (Plus (Var "x", Var "y")) ["x", Float; "y", Float])
+printfn "Expected Float, got %A" (infer (Times (Var "x", Var "y")) ["x", Float; "y", Float])
+printfn "Expected System.Exception: wrong operand type, got %A" (infer (Plus (Var "x", Var "y")) ["x", Int; "y", Float])
+printfn "Expected System.Exception: wrong operand type, got %A" (infer (Times (Var "x", Var "y")) ["x", Float; "y", Int])
+printfn "Expected Int, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Int; "y", Int; "z", Int])
+printfn "Expected Float, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Int; "y", Float; "z", Float])
+printfn "Expected Int, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Float; "y", Int; "z", Int])
+printfn "Expected Float, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Float; "y", Float; "z", Float])
+printfn "Expected System.Exception: branches of different types, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Int; "y", Int; "z", Float])
+printfn "Expected System.Exception: branches of different types, got %A" (infer (IfPositive (Var "x", Var "y", Var "z")) ["x", Float; "y", Float; "z", Int])
+printfn "Expected Int, got %A" (infer (Match (Var "x", "xi", Var "xi", "xf", NumI 1)) ["x", Int])
+printfn "Expected Int, got %A" (infer (Match (Var "x", "xi", Var "xi", "xf", NumI 1)) ["x", Float])
+printfn "Expected Float, got %A" (infer (Match (Var "x", "xi", NumF 1.1, "xf", Var "xf")) ["x", Int])
+printfn "Expected Float, got %A" (infer (Match (Var "x", "xi", NumF 1.1, "xf", Var "xf")) ["x", Float])
+printfn "Expected Int, got %A" (infer (Match (Neg (Var "x"), "xi", Plus (NumI 4, Var "xi"), "xf", IfPositive(Var "xf", NumI 5, Times (NumI 4, NumI 6)))) ["x", Int])
+printfn "Expected Float, got %A" (infer (Plus (NumF 3.4, IntToFloat (NumI 4))) [])
+printfn "Expected System.Exception: wrong operand type, got %A" (infer (Plus (NumF 3.4, IntToFloat (NumF 4.4))) [])
+printfn "Expected System.Exception: wrong operand type, got %A" (infer (Plus (NumI 3, IntToFloat (NumI 4))) [])
+
 // Problem 7
 
 let add_casts (e : iexpr) (tyenv : tyenvir) : expr =

@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "7MMSQ32LlvZi8GYGgrgkn8Hfmc5niPe5hcO7HG/ZVdAyUuU/k4WEfXBxlu1E7ulhTdTv35Xk1N/fybXZrTGM0g==",
+  "dgSpecHash": "yJrLvs9FFgUFn3WNfAc9lt5YADU1OSIgubxk1AAihvP+5Bvior6lGwgUAoFHJRARN7+PkXsjAazUwqgLsBg9fg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\ConsoleApp1\\ConsoleApp1.fsproj",
+  "projectFilePath": "F:\\alexandra\\git_repositories\\FMAL-Assignment-2\\Assignment-2\\ConsoleApp1\\ConsoleApp1.fsproj",
   "expectedPackageFiles": [
-    "C:\\Users\\rikki\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
-    "C:\\Users\\rikki\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.10\\microsoft.netcore.app.host.win-x64.3.1.10.nupkg.sha512"
+    "C:\\Users\\alexandra\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
+    "C:\\Users\\alexandra\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.11\\microsoft.netcore.app.host.win-x64.3.1.11.nupkg.sha512"
   ],
   "logs": []
 }
