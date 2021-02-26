@@ -180,12 +180,8 @@ let rec ieval (e : iexpr) (env : envir) : value =
 
 printfn "----PROBLEM 1----"
 printfn "%A" (ieval (IVar "x") [])
-// val it : value = I 0
 printfn "%A" (ieval (IVar "x") ["x", I 5])
-// val it : value = I 5
 printfn "%A" (ieval (IPlus (IVar "x", ITimes (IVar "y", IVar "z"))) ["x", F 1.1; "z", I 10])
-// val it : value = F 1.1
-
 
 
 // Problem 2
@@ -324,8 +320,8 @@ printfn "Expected I 20, got %A" (eval (add_matches (IIfPositive (INeg (IVar "x")
 let rec infer (e : expr) (tyenv : tyenvir) : typ =
     match e with
     | Var x -> lookup x tyenv
-    | NumI x -> Int
-    | NumF x -> Float
+    | NumI _ -> Int
+    | NumF _ -> Float
     | Plus(x, y) ->
         match infer x tyenv, infer y tyenv with
         | Int, Int -> Int
@@ -395,13 +391,8 @@ let rec add_casts (e : iexpr) (tyenv : tyenvir) : expr =
         | Int, Float -> Times(IntToFloat(add_casts(exp1) tyenv), add_casts(exp2) tyenv)
         | Float, Int -> Times(add_casts(exp1) tyenv, IntToFloat(add_casts(exp2) tyenv))
         | _ -> Times(add_casts(exp1) tyenv, add_casts(exp2) tyenv)
-    | INeg exp ->
-        match infer(add_casts exp tyenv) tyenv with
-        | Int -> Neg(add_casts(exp) tyenv)
-        | Float -> Neg(add_casts(exp) tyenv)
-    | IIfPositive (exp1, exp2, exp3) -> 
-        match infer(add_casts exp1 tyenv) tyenv, infer(add_casts exp2 tyenv) tyenv, infer(add_casts exp3 tyenv) tyenv with
-        | _ -> IfPositive((add_casts(exp1) tyenv, add_casts(exp2) tyenv, add_casts(exp3) tyenv))
+    | INeg exp -> Neg(add_casts exp tyenv)
+    | IIfPositive (exp1, exp2, exp3) -> IfPositive((add_casts(exp1) tyenv, add_casts(exp2) tyenv, add_casts(exp3) tyenv))
         
 
 printfn "----PROBLEM 7----"
@@ -412,12 +403,23 @@ printfn "Expected F 10.4 got %A" (eval (add_casts (IIfPositive (IVar "x", INumI 
 printfn "Expected I 20 got %A" (eval (add_casts (IIfPositive (INeg (IVar "x"), IPlus (IVar "y", INumI 5), ITimes (IVar "y", INumI 5))) ["x", Float; "y", Int]) ["x", F 2.2; "y", I 4])
 
 // Problem 8
-
-// ANSWER 8 HERE:
-
+    // As add_matches and add_casts are designed to output the same result, then they should never return a different result
+    // given the same input. This applies to both eval and infer. However, the behaviour inside the functions can vary,
+    // namely due to how Match interprets the inputs.
 
 // Problem 9
 
-let rlower (inss : rcode) : rcode = failwith "to implement"
+let rec rlower (inss : rcode) : rcode =
+    match inss with
+    | [] -> inss
+    | RDup::inss -> RStore :: RLoad 0 :: RLoad 0 :: RErase :: rlower inss
+    | RPop::inss -> RStore :: RErase :: rlower inss
+    | RSwap::inss -> RStore :: RStore :: RLoad 1 :: RLoad 0 :: rlower inss
+    | other::inss -> other :: rlower inss
+
 
 printfn "----PROBLEM 9----"
+printfn "Expected 4 got %A" (reval (rlower [RDup; RAdd; RAdd]) [1;2] [])
+printfn "Expected 5 got %A" (reval (rlower [RPop; RAdd]) [1;2;3] [])
+printfn "Expected -1 got %A" (reval (rlower [RSwap; RSub]) [1;2] [])
+printfn "Expected 16 got %A" (reval (rlower [RLoad 1; RDup; RAdd; RDup; RLoad 2; RSwap; RAdd; RLoad 0; RPop]) [] [4;5;6])
