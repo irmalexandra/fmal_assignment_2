@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj": {}
+    "F:\\alexandra\\git_repositories\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj": {
+    "F:\\alexandra\\git_repositories\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj",
+        "projectUniqueName": "F:\\alexandra\\git_repositories\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj",
         "projectName": "Assignment_2",
-        "projectPath": "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj",
-        "packagesPath": "C:\\Users\\rikki\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rikki\\Documents\\RU\\RU-Projects\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\obj\\",
+        "projectPath": "F:\\alexandra\\git_repositories\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\Assignment_2.fsproj",
+        "packagesPath": "C:\\Users\\alexandra\\.nuget\\packages\\",
+        "outputPath": "F:\\alexandra\\git_repositories\\FMAL-Assignment-2\\Assignment-2\\Assignment_2\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\rikki\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\alexandra\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -52,7 +52,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[3.1.10, 3.1.10]"
+              "version": "[3.1.11, 3.1.11]"
             }
           ],
           "frameworkReferences": {
@@ -60,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     }
